@@ -163,6 +163,7 @@
         let sessionStartTime = null;
         let heartbeatInterval = null;
         let allConfigs = {}; 
+        let mealStartTime = null;
 
         const screenConfig = {
             'baseline': { timerId: 'baselineTimer', duration: 180 },
@@ -290,6 +291,12 @@
 
                 if (command.action === 'start') {
                     startMainTimer(currentScreenConfig.timerId, remainingSeconds > 0 ? remainingSeconds : currentScreenConfig.duration);
+
+                    // Record meal start time when meal timer begins
+                    if (gameState.screenId === 'meal') {
+                    mealStartTime = new Date();
+                    }
+                    
                 } else if (command.action === 'stop') {
                     stopMainTimer();
                 } else if (command.action === 'reset') {
@@ -322,8 +329,8 @@
             const screenEl = document.getElementById(screenId);
             if (screenEl) screenEl.classList.remove('hidden');
 
-            if (screenId === 'complete' && sessionStartTime) {
-                const endTime = new Date(sessionStartTime.getTime() + (2 * 60 * 60 * 1000)); // 2 hours
+            if (screenId === 'complete' && mealStartTime) {
+                const endTime = new Date(mealStartTime.getTime() + (2 * 60 * 60 * 1000)); // 2 hours
                 const endTimeString = endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                 document.getElementById('endTimeDisplay').textContent = endTimeString;
             }
